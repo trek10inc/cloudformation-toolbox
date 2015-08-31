@@ -85,7 +85,7 @@ for output in response['Stacks'][0]['Outputs']:
     if output['OutputKey'] == 'ClusterName':
         cluster_name = output['OutputValue']
 
-    if output['OutputKey'] == 'TaskDefinition':
+    if output['OutputKey'] == 'ConsoleRunner':
         task_def = output['OutputValue']
 
 # Dumb thing we have to do to get the running image / tag
@@ -124,17 +124,34 @@ print(bcolors.OKGREEN + "Task started with id " + running_task_arn + bcolors.END
 print("Registering the task killer to run on script exit")
 atexit.register(stop_task, ecsClient, cluster_name, running_task_arn)
 
-# Wait for task to start. HACK
-print("Waiting 10 seconds for task to start...")
-time.sleep(10)
+# Poll until task is running
+print("Polling for task to be running.", end="", flush=True)
 
-# Dumb, this doens't return the host ip, just 0.0.0.0
-response = ecsClient.describe_tasks(
-    cluster=cluster_name,
-    tasks=[
-        running_task_arn
-    ]
-)
+while True:
+    try:
+        print(".", end="", flush=True)
+        time.sleep(2)
+        response = ecsClient.describe_tasks(
+            cluster=cluster_name,
+            tasks=[
+                running_task_arn
+            ]
+        )
+
+        # Break out if the task is running
+        if response['tasks'][0]['lastStatus'] == 'RUNNING':
+            print(bcolors.OKGREEN + " Task running!" + bcolors.ENDC, flush=True)
+            break
+        elif response['tasks'][0]['lastStatus'] == 'STOPPED':
+            print(bcolors.FAIL + " The task died." + bcolors.ENDC)
+            exit()
+
+    except Exception as e:
+        print(e)
+        print(bcolors.FAIL + "Couldn't poll the task status" + bcolors.ENDC, flush=True)
+        exit()
+
+# pp.pprint(response)
 
 response = ecsClient.describe_container_instances(
     cluster=cluster_name,
@@ -153,6 +170,6 @@ response = ec2Client.describe_instances(
 
 ip_address = response['Reservations'][0]['Instances'][0]['PublicIpAddress']
 
-# os.system("ssh -oStrictHostKeyChecking=no ec2-user@" + ip_address + " -t \"docker ps\"")
+#  os.system("ssh -oStrictHostKeyChecking=no ec2-user@" + ip_address + " -t \"docker ps | grep " + full_image_reference + " | grep seconds | awk '{print \$1;}' \"")
 
-os.system("ssh -oStrictHostKeyChecking=no ec2-user@" + ip_address + " -t \"docker exec -it \`docker ps | grep " + full_image_reference + " | grep seconds | awk '{print \$1;}'\` bash\"")
+os.system("ssh -oStrictHostKeyChecking=no ec2-user@" + ip_address + " -t \"docker exec -it \`docker ps | grep " + full_image_reference + " | grep seconds | awk 'NR==1{print \$1;}'\` bash\"")
