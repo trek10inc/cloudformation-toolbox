@@ -41,7 +41,7 @@ optional arguments:
 Performs bit of behind the scenes magic to get the latest task version running on the stack, and creates a new task that is not attached to any running service. It provisons the task with all the expected environment variables and opens the user up to a bash-script in the newly created task. On exit, the task is killed and the command cleans up after itself.
 
 __Usage__
-`docker run --rm -it trek10/cloudformation-toolbox(:tag) ecs-shell --sshkey "``cat .ssh/you-key.pub``" --key AWS_KEY --secret AWS_SECRET --region AWS_REGION --stack StackName`
+``docker run --rm -it trek10/cloudformation-toolbox(:tag) ecs-shell --sshkey "`cat .ssh/you-key.pub`" --key AWS_KEY --secret AWS_SECRET --region AWS_REGION --stack StackName``
 
 _Note_  
 `-it` is critical to be able to interact with the created shell.  
