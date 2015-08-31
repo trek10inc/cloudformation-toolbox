@@ -109,7 +109,7 @@ def maintain_loop(response, last_event_id):
     return True
 
 # Print top of updates stream
-print("{: <30} {: <30} {: <}".format("Resource", "Status", "Details"), flush=True)
+print("{: <30} {: <40} {: <}".format("Resource", "Status", "Details"), flush=True)
 
 
 # Steam updates until we hit a closing case

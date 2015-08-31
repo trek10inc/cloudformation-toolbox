@@ -125,8 +125,8 @@ print("Registering the task killer to run on script exit")
 atexit.register(stop_task, ecsClient, cluster_name, running_task_arn)
 
 # Wait for task to start. HACK
-print("Waiting 5 seconds for task to start...")
-time.sleep(3)
+print("Waiting 10 seconds for task to start...")
+time.sleep(10)
 
 # Dumb, this doens't return the host ip, just 0.0.0.0
 response = ecsClient.describe_tasks(
@@ -152,5 +152,7 @@ response = ec2Client.describe_instances(
 )
 
 ip_address = response['Reservations'][0]['Instances'][0]['PublicIpAddress']
+
+# os.system("ssh -oStrictHostKeyChecking=no ec2-user@" + ip_address + " -t \"docker ps\"")
 
 os.system("ssh -oStrictHostKeyChecking=no ec2-user@" + ip_address + " -t \"docker exec -it \`docker ps | grep " + full_image_reference + " | grep seconds | awk '{print \$1;}'\` bash\"")
