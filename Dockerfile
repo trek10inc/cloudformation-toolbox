@@ -10,7 +10,7 @@ RUN apt-get update && \
 RUN mkdir /tmp/builder
 
 ADD ./deploy/* /tmp/builder/
-# ADD ./build/*  /tmp/builder/
+ADD ./iam/*  /tmp/builder/
 
 # Make the related script executables
 RUN cd /tmp/builder && chmod -R +x . && rename 's/.py//' *.py && mv /tmp/builder/* /usr/bin

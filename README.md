@@ -63,3 +63,27 @@ optional arguments:
   --stack STACK    The Stack name (ex: Production)
   --region REGION  The region of the stack (ex: us-east-1)
 ```
+
+### securitygroup-ip-manager
+Useful for adding and remove an ip address from an admin security group, particularly useful in combination with the `ecs-shell` command.
+
+```
+usage: securitygroup-ip-manager [-h] --key KEY --secret SECRET
+                                --security-group-id SECURITY_GROUP_ID --region
+                                REGION [--ip IP] [--add] [--remove]
+
+Add / Remove an IP Address on a specific Security Group
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --key KEY             AWS Access Key Id
+  --secret SECRET       AWS Secret Access Key
+  --security-group-id SECURITY_GROUP_ID
+                        The Stack name (ex: Production)
+  --region REGION       The region of the stack (ex: us-east-1)
+  --ip IP               IP Address you would like added or removed form the
+                        Security Group, defaults to current public IP
+  --add, -a             Add IP Address
+  --remove, -r          Remove IP Address
+  ```
+  
