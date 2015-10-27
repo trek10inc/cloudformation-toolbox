@@ -6,6 +6,12 @@ A small suite of scripts we use to manage cloudformation activities.
 
 Seriously, use these at your own risk. They are not guaranteed to work, keep working, or anything. We build these as side projects, or specifically to meet the needs of one specific clients.
 
+## Building
+
+Make changes and build the docker image locally.
+
+    docker build -t trek10/cloudformation-toolbox:v1.2 .
+
 ## Usage
 
 Base command:  
@@ -53,6 +59,33 @@ usage: ecs-shell [-h] --key KEY --sshkey SSHKEY --secret SECRET --stack STACK
                  --region REGION
 
 Get a shell in a preconfigured container in your service stack
+
+optional arguments:
+  -h, --help       show this help message and exit
+  --key KEY        AWS Access Key Id
+  --sshkey SSHKEY  SSH Key content, not just the file name! Use `cat key.pem`
+                   to read in a file to the command line)
+  --secret SECRET  AWS Secret Access Key
+  --stack STACK    The Stack name (ex: Production)
+  --region REGION  The region of the stack (ex: us-east-1)
+```
+
+### ecs-service-shell
+Performs bit of behind the scenes magic to get the latest task version running on the stack, and attaches to a running service task. 
+
+__Usage__  
+``docker run --rm -it trek10/cloudformation-toolbox(:tag) ecs-service-shell --sshkey "`cat .ssh/your-key.pub`" --key AWS_KEY --secret AWS_SECRET --region AWS_REGION --stack StackName``
+
+_Note_  
+`-it` is critical to be able to interact with the created shell.  
+`--sshkey` takes the full key text as an argument, not just a filename.
+
+__Available [options]__
+```
+usage: ecs-service-shell [-h] --key KEY --sshkey SSHKEY --secret SECRET --stack STACK
+                 --region REGION
+
+Get a shell in attached to a running service running task in service stack
 
 optional arguments:
   -h, --help       show this help message and exit
