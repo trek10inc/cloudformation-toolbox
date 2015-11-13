@@ -34,8 +34,13 @@ parser.add_argument('--sshkey', required=True, help='SSH Key content, not just t
 parser.add_argument('--secret', required=True, help='AWS Secret Access Key')
 parser.add_argument('--stack', required=True, help='The Stack name (ex: Production)')
 parser.add_argument('--region', required=True, help='The region of the stack (ex: us-east-1)')
+parser.add_argument('--task', required=False, help='The filter for the task runner (ex: ServiceTask|CronRunner)')
 
 args = parser.parse_args()
+
+taskFilter = args.task
+if taskFilter is None:
+  taskFilter = 'ServiceTask'
 
 print("Stack is " + args.stack + ".", flush=True)
 
@@ -70,6 +75,7 @@ print("Marshalling outputs and paramenters")
 
 # Get output references for finding related resources
 for output in response['Stacks'][0]['Outputs']:
+    # pp.pprint(output)
     if output['OutputKey'] == 'ClusterName':
         cluster_name = output['OutputValue']
 
@@ -101,7 +107,7 @@ try:
         cluster=cluster_name
     )
 
-    #pp.pprint(response)
+    # pp.pprint(response)
         
     # Break out if the task is running
     if response['taskArns']:
@@ -120,7 +126,7 @@ try:
         tasks=tasks_list
     )
 
-    #pp.pprint(response)
+    # pp.pprint(response)
         
     # Break out if the task is running
     current_tasks = response['tasks']
@@ -154,4 +160,4 @@ response = ec2Client.describe_instances(
 ip_address = response['Reservations'][0]['Instances'][0]['PublicIpAddress']
 
 #  os.system("ssh -oStrictHostKeyChecking=no ec2-user@" + ip_address + " -t \"docker ps | grep " + full_image_reference + " | grep seconds | awk '{print \$1;}' \"")
-os.system("ssh -oStrictHostKeyChecking=no ec2-user@" + ip_address + " -t \"docker exec -it \`docker ps | grep " + full_image_reference + " | awk 'NR==1{print \$1;}'\` bash\"")
+os.system("ssh -oStrictHostKeyChecking=no ec2-user@" + ip_address + " -t \"docker exec -it \`docker ps | grep " + full_image_reference + " | grep "+ taskFilter +" | awk 'NR==1{print \$1;}'\` bash\"")

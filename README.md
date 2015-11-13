@@ -82,7 +82,7 @@ _Note_
 
 __Available [options]__
 ```
-usage: ecs-service-shell [-h] --key KEY --sshkey SSHKEY --secret SECRET --stack STACK
+usage: ecs-service-shell [-h] --key KEY --sshkey SSHKEY --secret SECRET --stack STACK --task TASKFILTER
                  --region REGION
 
 Get a shell in attached to a running service running task in service stack
@@ -94,6 +94,7 @@ optional arguments:
                    to read in a file to the command line)
   --secret SECRET  AWS Secret Access Key
   --stack STACK    The Stack name (ex: Production)
+  --task TASKFILTER The filter for the task runner (ex: ServiceTask|CronRunner)
   --region REGION  The region of the stack (ex: us-east-1)
 ```
 
