@@ -1,4 +1,4 @@
-# cloudformation-toolbox
+# CloudFormation Toolbox
 
 A small suite of scripts we use to manage cloudformation activities.
 
