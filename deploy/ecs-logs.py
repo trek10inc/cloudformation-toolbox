@@ -31,8 +31,7 @@ class bcolors:
 
 parser = argparse.ArgumentParser(description='Get a shell in a preconfigured container in your service stack')
 parser.add_argument('--key', required=False, help='AWS Access Key Id')
-# parser.add_argument('--sshkey', required=True, help='SSH Key content, not just the file name! Use `cat key.pem` to read in a file to the command line)')
-parser.add_argument('--sshkey', required=True, help='Path to ssh key')
+parser.add_argument('--sshkey', required=True, help='SSH Key content, not just the file name! Use `cat key.pem` to read in a file to the command line)')
 parser.add_argument('--secret', required=False, help='AWS Secret Access Key')
 parser.add_argument('--stack', required=True, help='The Stack name (ex: Production)')
 parser.add_argument('--region', required=False, help='The region of the stack (ex: us-east-1)', default='eu-west-1')
@@ -42,11 +41,11 @@ args = parser.parse_args()
 print("Stack is " + args.stack + ".", flush=True)
 
 # Writes out so it is usable in SSH
-# keyfile = open('/root/.ssh/id_rsa', 'w')
-# keyfile.write(args.sshkey)
-# keyfile.close()
+keyfile = open('/root/.ssh/id_rsa', 'w')
+keyfile.write(args.sshkey)
+keyfile.close()
 
-# os.chmod('/root/.ssh/id_rsa', 0o600)
+os.chmod('/root/.ssh/id_rsa', 0o600)
 
 if args.key:
     print(bcolors.OKGREEN + 'Using provided aws access keys' + bcolors.ENDC)
@@ -147,5 +146,5 @@ ip_address = ec2Instances['Reservations'][0]['Instances'][0]['PublicIpAddress']
 
 print (bcolors.OKGREEN + "Getting logs from host, ip address: ", ip_address, bcolors.ENDC)
 
-os.system("ssh -oStrictHostKeyChecking=no -i " + args.sshkey + " ec2-user@" + ip_address +
+os.system("ssh -oStrictHostKeyChecking=no ec2-user@" + ip_address +
           ''' "docker logs -f \`docker ps -a | grep ''' + args.stack + ''' | head -n 1 | awk '{ print \$1}'\`" ''')
