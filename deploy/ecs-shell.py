@@ -34,6 +34,7 @@ parser.add_argument('--sshkey', required=True, help='SSH Key content, not just t
 parser.add_argument('--secret', required=True, help='AWS Secret Access Key')
 parser.add_argument('--stack', required=True, help='The Stack name (ex: Production)')
 parser.add_argument('--region', required=True, help='The region of the stack (ex: us-east-1)')
+parser.add_argument('--private', required=False, default=False, help='Connect via public or private IP')
 
 args = parser.parse_args()
 
@@ -168,7 +169,10 @@ response = ec2Client.describe_instances(
     ]
 )
 
-ip_address = response['Reservations'][0]['Instances'][0]['PublicIpAddress']
+if args.private:
+    ip_address = response['Reservations'][0]['Instances'][0]['PrivateIpAddress']
+else:
+    ip_address = response['Reservations'][0]['Instances'][0]['PublicIpAddress']
 
 #  os.system("ssh -oStrictHostKeyChecking=no ec2-user@" + ip_address + " -t \"docker ps | grep " + full_image_reference + " | grep seconds | awk '{print \$1;}' \"")
 
