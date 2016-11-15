@@ -68,6 +68,7 @@ optional arguments:
   --secret SECRET  AWS Secret Access Key
   --stack STACK    The Stack name (ex: Production)
   --region REGION  The region of the stack (ex: us-east-1)
+  --private PRIVATE_IP boolean to use private VPN IPs vs public ones
 ```
 
 ### ecs-service-shell
@@ -96,6 +97,7 @@ optional arguments:
   --stack STACK    The Stack name (ex: Production)
   --task TASKFILTER The filter for the task runner (ex: ServiceTask|CronRunner)
   --region REGION  The region of the stack (ex: us-east-1)
+  --private PRIVATE_IP boolean to use private VPN IPs vs public ones
 ```
 
 ### securitygroup-ip-manager
