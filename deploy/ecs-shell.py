@@ -9,6 +9,7 @@ import random
 import atexit
 import os
 import stat
+import re
 from boto3.session import Session
 
 
@@ -35,6 +36,7 @@ parser.add_argument('--secret', required=True, help='AWS Secret Access Key')
 parser.add_argument('--stack', required=True, help='The Stack name (ex: Production)')
 parser.add_argument('--region', required=True, help='The region of the stack (ex: us-east-1)')
 parser.add_argument('--private', required=False, default=False, help='Connect via public or private IP')
+parser.add_argument('--consoleversion', required=False, default=1, help='console task definition version')
 
 args = parser.parse_args()
 
@@ -89,18 +91,12 @@ for output in response['Stacks'][0]['Outputs']:
     if output['OutputKey'] == 'ConsoleRunner':
         task_def = output['OutputValue']
 
-# Dumb thing we have to do to get the running image / tag
-for parameter in response['Stacks'][0]['Parameters']:
-    if parameter['ParameterKey'] == 'ContainerDockerOrganization':
-        docker_organization = parameter['ParameterValue']
+# swap out the console task definition version
+if args.consoleversion:
+    task_def = task_def.replace(":1",(":"+args.consoleversion))
 
-    if parameter['ParameterKey'] == 'ContainerDockerImage':
-        docker_image = parameter['ParameterValue']
-
-    if parameter['ParameterKey'] == 'ContainerDockerTag':
-        docker_tag = parameter['ParameterValue']
-
-full_image_reference = docker_organization + "/" + docker_image + ":" + docker_tag
+# Dumb thing we have to do to get the running task name
+image_reference = re.search(r'/(.*):', task_def).group(1)
 
 print("Running the task we will shell into")
 
@@ -174,6 +170,6 @@ if args.private:
 else:
     ip_address = response['Reservations'][0]['Instances'][0]['PublicIpAddress']
 
-#  os.system("ssh -oStrictHostKeyChecking=no ec2-user@" + ip_address + " -t \"docker ps | grep " + full_image_reference + " | grep seconds | awk '{print \$1;}' \"")
+#  os.system("ssh -oStrictHostKeyChecking=no ec2-user@" + ip_address + " -t \"docker ps | grep " + image_reference + " | grep seconds | awk '{print \$1;}' \"")
 
-os.system("ssh -oStrictHostKeyChecking=no ec2-user@" + ip_address + " -t \"docker exec -it \`docker ps | grep " + full_image_reference + " | grep seconds | awk 'NR==1{print \$1;}'\` bash\"")
+os.system("ssh -oStrictHostKeyChecking=no ec2-user@" + ip_address + " -t \"docker exec -it \`docker ps | grep " + image_reference + " | grep seconds | awk 'NR==1{print \$1;}'\` bash\"")
