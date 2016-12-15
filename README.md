@@ -69,6 +69,7 @@ optional arguments:
   --stack STACK    The Stack name (ex: Production)
   --region REGION  The region of the stack (ex: us-east-1)
   --private PRIVATE_IP boolean to use private VPN IPs vs public ones
+  --consoleversion required=False, default=1, help='console task definition version'
 ```
 
 ### ecs-service-shell
