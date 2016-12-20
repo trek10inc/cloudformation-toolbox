@@ -108,6 +108,7 @@ try:
         startedBy='ConsoleRunner'
     )
 except Exception as e:
+    print("task_def: " + task_def)
     print(e)
     print(bcolors.FAIL + "Couldn't find the servers to place the task on or your don't have permissions to run a task on this service & cluster." + bcolors.ENDC)
     exit()
