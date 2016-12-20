@@ -99,6 +99,7 @@ optional arguments:
   --task TASKFILTER The filter for the task runner (ex: ServiceTask|CronRunner)
   --region REGION  The region of the stack (ex: us-east-1)
   --private PRIVATE_IP boolean to use private VPN IPs vs public ones
+  --serviceversion required=False, default=1, help='console task definition version'
 ```
 
 ### securitygroup-ip-manager
